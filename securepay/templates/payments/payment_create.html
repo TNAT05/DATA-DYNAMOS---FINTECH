@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center fade-in">
+  <div class="col-md-8 col-lg-6">
+    <div class="glass-card p-5">
+      <div class="text-center mb-4">
+        <div class="icon-box bg-primary p-3 rounded-circle d-inline-block text-white mb-3">
+          <i class="bi bi-send-plus fs-2"></i>
+        </div>
+        <h3 class="fw-bold">Initiate Payment</h3>
+        <p class="text-secondary">Create a new secure payment request.</p>
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger glass-card border-danger text-white">
+          {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        {% for field in form %}
+        <div class="mb-3">
+          <label class="form-label text-secondary small fw-bold text-uppercase">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+          <div class="form-text text-secondary opacity-75">{{ field.help_text }}</div>
+          {% endif %}
+          {% for error in field.errors %}
+          <div class="text-danger small mt-1">{{ error }}</div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+
+        <div class="d-grid gap-3 mt-4">
+          <button type="submit" class="btn btn-primary btn-lg">
+            <i class="bi bi-shield-lock-fill me-2"></i> Submit Secure Request
+          </button>
+          <a href="{% url 'payments:home' %}" class="btn btn-outline-light">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

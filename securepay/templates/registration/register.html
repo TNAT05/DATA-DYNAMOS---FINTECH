@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row min-vh-100 align-items-center justify-content-center" style="margin-top: -100px;">
+    <div class="col-md-6 col-lg-5">
+        <div class="glass-card position-relative overflow-hidden p-0 fade-in">
+
+            <!-- decorative glow -->
+            <div class="position-absolute top-0 start-50 translate-middle"
+                style="width: 200px; height: 200px; background: var(--success-gradient); filter: blur(60px); opacity: 0.2;">
+            </div>
+
+            <div class="p-5 position-relative">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold mb-1">Join SecurePay</h2>
+                    <p class="text-secondary small text-uppercase letter-spacing-2">Create New Account</p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div
+                        class="alert alert-danger bg-danger bg-opacity-10 border-danger text-danger py-2 mb-4 small rounded-3">
+                        {{ form.non_field_errors|striptags }}
+                    </div>
+                    {% endif %}
+
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small fw-bold text-uppercase">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="d-grid mt-4 mb-3">
+                        <button type="submit"
+                            class="btn btn-primary btn-lg py-3 fw-bold shadow-lg position-relative overflow-hidden group">
+                            <span class="position-relative z-1">CREATE ACCOUNT</span>
+                            <div
+                                class="position-absolute top-0 start-0 w-100 h-100 bg-white opacity-25 translate-x-full group-hover:translate-x-0 transition-transform">
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="text-center">
+                        <span class="text-secondary small">Already have an account?</span>
+                        <a href="{% url 'login' %}"
+                            class="text-white text-decoration-none fw-bold ms-1 hover-underline">Sign In</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

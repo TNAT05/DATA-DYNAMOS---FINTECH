@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=securepay
+      - POSTGRES_USER=securepay
+      - POSTGRES_PASSWORD=securepay
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U securepay" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=insecure-hackathon-key-change-in-prod
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=securepay
+      - DB_USER=securepay
+      - DB_PASSWORD=securepay
+      - DB_HOST=db
+      - DB_PORT=5432
+
+volumes:
+  postgres_data:

@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+    <!-- Payment Header -->
+    <div class="glass-card p-4 mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <small class="text-secondary text-uppercase fw-bold">Payment Request</small>
+          <h2 class="mb-0 fw-bold">#{{ payment.id }}</h2>
+        </div>
+        <div class="text-end">
+          <span
+            class="badge {% if payment.status == 'APPROVED' %}bg-success{% elif payment.status == 'REJECTED' %}bg-danger{% elif payment.status == 'EXECUTED' %}bg-primary{% else %}bg-warning text-dark{% endif %} fs-6 px-3 py-2">
+            {{ payment.get_status_display }}
+          </span>
+          <div class="small text-secondary mt-1">{{ payment.created_at|date:"M d, Y H:i" }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Details Grid -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-8">
+        <div class="glass-card p-4 h-100">
+          <h5 class="mb-4 border-bottom border-light pb-2">Transaction Details</h5>
+
+          <div class="row mb-3">
+            <div class="col-sm-4 text-secondary">Beneficiary</div>
+            <div class="col-sm-8 fw-bold fs-5">{{ payment.beneficiary_name }}</div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-sm-4 text-secondary">Amount</div>
+            <div class="col-sm-8 text-success fw-bold fs-4">₹{{ payment.amount }}</div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-sm-4 text-secondary">Initiator</div>
+            <div class="col-sm-8">{{ payment.initiator.username }}</div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-sm-4 text-secondary">Description</div>
+            <div class="col-sm-8 text-light">{{ payment.description }}</div>
+          </div>
+
+          <div
+            class="alert {% if needs_admin %}alert-warning{% else %}alert-success{% endif %} bg-opacity-10 border-0 text-white mt-3">
+            <i class="bi {% if needs_admin %}bi-shield-lock{% else %}bi-shield-check{% endif %} me-2"></i>
+            Policy Check:
+            {% if needs_admin %}
+            <strong>Admin Approval Required</strong> (High Value/New Beneficiary)
+            {% else %}
+            Standard Approval
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="glass-card p-4 h-100">
+          <h5 class="mb-4 border-bottom border-light pb-2">Approval Status</h5>
+
+          <div class="d-flex justify-content-between mb-3">
+            <span class="text-secondary">Progress</span>
+            <span class="fw-bold">{{ payment.approvals.count }} / {{ required_approvals }}</span>
+          </div>
+
+          <div class="progress mb-4" style="height: 6px; background: rgba(255,255,255,0.1);">
+            <div class="progress-bar bg-success"
+              style="width: {% widthratio payment.approvals.count required_approvals 100 %}%"></div>
+          </div>
+
+          <h6>Approvers:</h6>
+          <ul class="list-unstyled">
+            {% for approval in approvals %}
+            <li class="mb-2">
+              <i class="bi bi-check-circle-fill text-success me-2"></i>
+              {{ approval.approver.username }}
+              <small class="text-secondary d-block ms-4">{{ approval.timestamp|date:"M d, H:i" }}</small>
+            </li>
+            {% empty %}
+            <li class="text-secondary fst-italic">No approvals yet.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    {% if can_approve or can_execute %}
+    <div class="glass-card p-4 mb-4 text-center">
+      {% if can_approve %}
+      <h5 class="mb-3">Action Required</h5>
+      <p class="text-secondary mb-4">You are authorized to review this payment.</p>
+      <a href="{% url 'payments:approve_payment' payment.id %}" class="btn btn-success btn-lg px-5 me-3">
+        <i class="bi bi-check-lg"></i> Approve
+      </a>
+      <a href="{% url 'payments:reject_payment' payment.id %}" class="btn btn-danger btn-lg px-5">
+        <i class="bi bi-x-lg"></i> Reject
+      </a>
+      {% endif %}
+
+      {% if can_execute %}
+      <h5 class="mb-3">Ready for Execution</h5>
+      <p class="text-secondary mb-4">All approvals secured. Ready to transfer funds.</p>
+      <a href="{% url 'payments:execute_payment' payment.id %}" class="btn btn-primary btn-lg px-5">
+        <i class="bi bi-lightning-charge-fill"></i> Execute Transfer
+      </a>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Audit Log -->
+    <div class="glass-card p-4">
+      <h5 class="mb-3">Audit Trail</h5>
+      <div class="table-responsive">
+        <table class="table text-light">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>User</th>
+              <th>Action</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in audit_logs %}
+            <tr>
+              <td class="text-secondary small">{{ log.timestamp|date:"M d, H:i:s" }}</td>
+              <td>{{ log.user.username }}</td>
+              <td><span class="badge bg-secondary">{{ log.action }}</span></td>
+              <td class="small text-secondary">{{ log.payload }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mt-4 text-center">
+      <a href="{% url 'payments:home' %}" class="text-secondary text-decoration-none">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

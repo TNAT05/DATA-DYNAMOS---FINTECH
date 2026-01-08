@@ -1,0 +1,89 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SecurePay | AI-Powered FinTech</title>
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <!-- Custom Premium CSS -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=1">
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-glass fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="{% url 'payments:home' %}">
+        <i class="bi bi-shield-check"></i> SecurePay
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+          <li class="nav-item"><a class="nav-link" href="{% url 'payments:home' %}">Home</a></li>
+          {% if user.is_authenticated %}
+          {% if user.is_initiator %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'payments:create_payment' %}">New Payment</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'payments:my_payments' %}">My History</a></li>
+          {% endif %}
+          {% if user.is_approver or user.is_admin %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'payments:pending_approvals' %}">Approvals</a></li>
+          {% endif %}
+          {% endif %}
+        </ul>
+        <ul class="navbar-nav">
+          {% if user.is_authenticated %}
+          <li class="nav-item d-flex align-items-center me-3">
+            <div class="d-flex flex-column text-end">
+              <span class="text-white fw-bold">{{ user.username }}</span>
+              <small class="text-secondary" style="font-size: 0.75rem;">{{ user.role }}</small>
+            </div>
+          </li>
+          <li class="nav-item">
+            <form action="{% url 'logout' %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-light btn-sm mt-2">Logout</button>
+            </form>
+          </li>
+          {% else %}
+          <li class="nav-item"><a class="btn btn-primary btn-sm px-4" href="{% url 'login' %}">Login</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container" style="padding-top: 100px;">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} glass-card text-white border-0 alert-dismissible fade show mb-4"
+      role="alert" style="background: rgba(var(--bs-{{ message.tags }}-rgb), 0.2);">
+      {{ message }}
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="fade-in">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+
+  <!-- AI Voice Assistant Button -->
+  <div id="voice-assistant-btn" class="voice-fab" title="AI Voice Assistant">
+    <i class="bi bi-mic-fill"></i>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{% static 'js/voice_assistant.js' %}"></script>
+</body>
+
+</html>

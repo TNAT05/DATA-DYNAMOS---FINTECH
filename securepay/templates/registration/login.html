@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row min-vh-100 align-items-center justify-content-center" style="margin-top: -100px;">
+  <div class="col-md-5 col-lg-4">
+    <!-- Premium Login Card -->
+    <div class="glass-card position-relative overflow-hidden p-0 fade-in">
+
+      <!-- decorative glow -->
+      <div class="position-absolute top-0 start-50 translate-middle"
+        style="width: 200px; height: 200px; background: var(--primary-gradient); filter: blur(60px); opacity: 0.3;">
+      </div>
+
+      <div class="p-5 position-relative">
+        <div class="text-center mb-5">
+          <h2 class="fw-bold mb-1">SecurePay</h2>
+          <p class="text-secondary small text-uppercase letter-spacing-2">Identity Verification</p>
+        </div>
+
+        <form method="post">
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+          <div class="alert alert-danger bg-danger bg-opacity-10 border-danger text-danger py-2 mb-4 small rounded-3">
+            <i class="bi bi-exclamation-circle-fill me-2"></i>{{ form.non_field_errors|striptags }}
+          </div>
+          {% endif %}
+
+          <div class="form-floating mb-3">
+            <input type="text" name="username" class="form-control text-white bg-dark bg-opacity-50 border-secondary"
+              id="floatingInput" placeholder="Username" required autofocus style="border-color: rgba(255,255,255,0.1);">
+            <label for="floatingInput" class="text-secondary">Username</label>
+          </div>
+
+          <div class="form-floating mb-4">
+            <input type="password" name="password"
+              class="form-control text-white bg-dark bg-opacity-50 border-secondary" id="floatingPassword"
+              placeholder="Password" required style="border-color: rgba(255,255,255,0.1);">
+            <label for="floatingPassword" class="text-secondary">Password</label>
+          </div>
+
+          <div class="d-grid mb-4">
+            <button type="submit"
+              class="btn btn-primary btn-lg py-3 fw-bold shadow-lg position-relative overflow-hidden group">
+              <span class="position-relative z-1">ACCESS ACCOUNT</span>
+              <div
+                class="position-absolute top-0 start-0 w-100 h-100 bg-white opacity-25 translate-x-full group-hover:translate-x-0 transition-transform">
+              </div>
+            </button>
+          </div>
+
+          <div class="text-center">
+            <a href="{% url 'payments:register' %}"
+              class="text-white text-decoration-none small fw-bold hover-scale px-3 py-2 border border-secondary border-opacity-25 rounded-pill"
+              style="background: rgba(255,255,255,0.05);">
+              <i class="bi bi-person-plus me-1"></i> New User? Click here to Register
+            </a>
+          </div>
+        </form>
+      </div>
+
+      <div class="bg-dark bg-opacity-50 p-3 text-center border-top border-secondary border-opacity-10">
+        <small class="text-muted" style="font-size: 0.7rem;">SECURE ENCRYPTED CONNECTION</small>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
