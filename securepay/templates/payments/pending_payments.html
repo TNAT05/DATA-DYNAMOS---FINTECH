@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Pending Approvals</h2>
+<table class="table table-sm">
+  <thead>
+    <tr>
+      <th>ID</th><th>Beneficiary</th><th>Amount</th><th>High Risk</th><th>Created By</th><th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in payments %}
+      <tr>
+        <td>{{ p.id }}</td>
+        <td>{{ p.beneficiary_name }}</td>
+        <td>{{ p.amount }} {{ p.currency }}</td>
+        <td>{% if p.is_high_risk %}Yes{% else %}No{% endif %}</td>
+        <td>{{ p.created_by.username }}</td>
+        <td>
+          <a href="{% url 'payments:payment_detail' p.id %}">View</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6">No pending payments.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
