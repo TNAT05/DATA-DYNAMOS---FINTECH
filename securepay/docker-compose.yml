@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: securepay
+      POSTGRES_USER: securepay
+      POSTGRES_PASSWORD: securepay
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DJANGO_SECRET_KEY: "dev-secret"
+      DJANGO_DEBUG: "1"
+      DB_NAME: "securepay"
+      DB_USER: "securepay"
+      DB_PASSWORD: "securepay"
+      DB_HOST: "db"
+      DB_PORT: "5432"
+
+volumes:
+  db_data:
