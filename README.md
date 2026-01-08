@@ -1,0 +1,1 @@
+Design and implement a policy‑driven secure payment and approval workflow for high‑risk transactions, ensuring that no sensitive payment can be executed without passing clearly defined role‑based checks, policy rules, and auditability guarantees.
